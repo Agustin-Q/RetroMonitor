@@ -1,0 +1,28 @@
+body {
+  margin:0;
+  padding:0;
+  overflow: hidden;
+  background-color:black;
+  color: white;
+  font-family: monospace;
+}
+canvas {
+  margin:auto;
+  border-color: wheat;
+  border-width: 3px;
+}
+span {
+  padding: 0.5rem;
+}
+
+#content{
+  margin:auto;
+  text-align: center;
+  width: min-content;
+}
+
+#sliderArea{
+  margin: auto;
+  width: max-content;
+  text-align: left;
+}
