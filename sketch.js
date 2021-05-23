@@ -3,7 +3,6 @@ let rSlider;
 let spacingSlider;
 let skewSlider;
 let aperture;
-let audioInput;
 let longSamples;
 let shortSamples;
 
@@ -39,8 +38,6 @@ function setup() {
 	aperture = new Aperture();
 	aperture.color = color(77,204,255);
 	fill(77,204,255);
-	audioInput = new p5.AudioIn();
-	audioInput.start();
 	longSamples = new averageFilter(60);
 	shortSamples = new averageFilter(5);
 	console.log(shortSamples);
@@ -55,18 +52,7 @@ let fr = 0;
 function draw() {
 	shaderPass = sPass.value();
 	background(0);
-	let rawLvl = audioInput.getLevel(1.0);
-	let lvl = 0;
-	let baseLvl =0;
-	if(rawLvl) {
-		baseLvl = longSamples.add(rawLvl);
-		lvl = shortSamples.add(rawLvl);
-	}
-	vol = map(baseLvl,0,1,0,height);
-	rect(0,height - vol,10, height);
-	rect(10,height - lvl*height,10, height);
 	aperture.setR(0.9*width/2) ;
-	aperture.setr(max(map(lvl,0,0.2,120,180),100));
 	aperture.show();
 	stroke(77,204,255);
 	strokeWeight(6);
@@ -75,7 +61,6 @@ function draw() {
 	}
 	noStroke();
 
-	triangle(10,10,10,60,60,10);
 	textFont("consolas");
 	textSize(50);
 	textAlign(RIGHT,TOP);
@@ -88,7 +73,7 @@ function draw() {
 	image(capture, 0, 0, width,height);
 
 
-	if((frameCount%6==0||lvl>0.2)&&defMultAnimate.checked()){
+	if((frameCount%6==0)&&defMultAnimate.checked()){
 		if(random()<0.3){
 			defMult.value(random(0.05,0.15));
 			defFreq.value(random(150,300));
@@ -112,14 +97,6 @@ function draw() {
 }
 
 function mousePressed() {
-  userStartAudio();
-	audioInput.start();
-	audioInput.getSources().then((res)=>{
-		console.log('promise');
-		console.log(res);
-	});
-	console.log("finished");
-	audioInput.setSource(4);
 }
 
 let freqy, multy,offy, freqx,multx,offx, mixXY,shift;
