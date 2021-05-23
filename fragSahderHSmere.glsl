@@ -6,11 +6,12 @@ varying vec2 vTexCoord;
 // our texture coming from p5
 uniform sampler2D tex0;
 
+  float width = 600.0;
+  int NumberOfSamples = 30;
+  float mixAmmount = 0.2;
 
 void main() {
   //settings
-  float width = 600.0;
-  int NumberOfSamples = 30;
   vec2 dir2d = vec2(-4.0,0.0);
   vec2 uv = vTexCoord;
   // the texture is loaded upside down and backwards by default so lets flip it
@@ -26,6 +27,6 @@ void main() {
   }
   tempTex = tempTex / accum;
   vec4 tex = texture2D(tex0, uv);
-  tempTex = mix(tex, tempTex, 0.2);
+  tempTex = mix(tex, tempTex, mixAmmount);
   gl_FragColor = tempTex;
 }

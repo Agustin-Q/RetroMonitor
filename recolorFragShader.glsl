@@ -5,8 +5,7 @@ varying vec2 vTexCoord;
 
 // our texture coming from p5
 uniform sampler2D tex0;
-vec4 inputColor =vec4(0,1,0,1);
-float strength = 1.0;
+vec4 inputColor = vec4(0,1,0,1);
 float mixAmmount = 0.6;
 
 
