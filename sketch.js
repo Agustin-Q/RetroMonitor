@@ -2,9 +2,6 @@ let RSlider;
 let rSlider;
 let spacingSlider;
 let skewSlider;
-let aperture;
-let longSamples;
-let shortSamples;
 
 let myShader;
 let gl;
@@ -23,7 +20,6 @@ function preload(){
 	smereShader = loadShader('vertShader.glsl', 'fragSahderHSmere.glsl');
 	reColorShader = loadShader('vertShader.glsl', 'recolorFragShader.glsl');
 	deformShader = loadShader('vertShader.glsl', 'deformFragShader.glsl');
-	img = loadImage('GLaDOShd_Portal_2.png');
 	monitor_img = loadImage('Assets/monitor.png');
 }
 let capture;
@@ -35,13 +31,7 @@ function setup() {
 	glReColor= createGraphics(width, height,WEBGL);
 	glDeform = createGraphics(width, height,WEBGL);
 	createSliders();
-	aperture = new Aperture();
-	aperture.color = color(77,204,255);
 	fill(77,204,255);
-	longSamples = new averageFilter(60);
-	shortSamples = new averageFilter(5);
-	console.log(shortSamples);
-
 	capture = createCapture(VIDEO);
 	capture.hide();
 	//capture.size(320, 240);
@@ -52,8 +42,6 @@ let fr = 0;
 function draw() {
 	shaderPass = sPass.value();
 	background(0);
-	aperture.setR(0.9*width/2) ;
-	aperture.show();
 	stroke(77,204,255);
 	strokeWeight(6);
 	for(let i = 0; i<10;i++){
