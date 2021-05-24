@@ -3,37 +3,25 @@ let rSlider;
 let spacingSlider;
 let skewSlider;
 
-let myShader;
-let gl;
 let cnv;
-let glSmere;
-let glReColor;
-let reColorShader;
-let glDeform;
-let deformShader;
-let trapezoidShader;
-let glTrapezoid;
 let shaderPass = 3;
 let img, monitor_img;
+let shaders = [];
 
 function preload(){
   // load the shader
-  myShader = loadShader('vertShader.glsl', 'fragSahder.glsl');
-	smereShader = loadShader('vertShader.glsl', 'fragSahderHSmere.glsl');
-	reColorShader = loadShader('vertShader.glsl', 'recolorFragShader.glsl');
-	deformShader = loadShader('vertShader.glsl', 'deformFragShader.glsl');
-	trapezoidShader = loadShader('vertShader.glsl', 'trapezoidFragShader.glsl');;
 	monitor_img = loadImage('Assets/monitor.png');
+
+	shaders.push(loadShader('vertShader.glsl', 'recolorFragShader.glsl'));
+  shaders.push(loadShader('vertShader.glsl', 'fragSahder.glsl'));
+	shaders.push(loadShader('vertShader.glsl', 'fragSahderHSmere.glsl'));
+	shaders.push(loadShader('vertShader.glsl', 'deformFragShader.glsl'));
+	shaders.push(loadShader('vertShader.glsl', 'trapezoidFragShader.glsl'));	
 }
 let capture;
 function setup() {
 	cnv = createCanvas(600, 450).parent("drawArea");
 	pixelDensity(1);
-	gl = createGraphics(width, height,WEBGL);
-	glSmere = createGraphics(width, height,WEBGL);
-	glReColor= createGraphics(width, height,WEBGL);
-	glDeform = createGraphics(width, height,WEBGL);
-	glTrapezoid = createGraphics(width, height,WEBGL);
 	createSliders();
 	fill(77,204,255);
 	capture = createCapture(VIDEO);
@@ -80,12 +68,28 @@ function draw() {
 	stroke(255);
 	rect(20,20,width - 40, height -40);
 	shaderPass = sPass.value();
-	let rendered = shaderPipeline(cnv,shaderPass);
-	
+
+	let uniforms = [];
+	uniforms[1] = [];
+	uniforms[1] = [
+		{name: 'freqy', value: freqy.value()},
+		{name: 'multy', value: multy.value()},
+		{name: 'offy', value: offy.value()},
+		{name: 'freqx', value: freqx.value()},
+		{name: 'multx', value: multx.value()},
+		{name: 'offx', value: offx.value()},
+		{name: 'mixXY', value: mixXY.value()},
+		{name: 'shift', value: shift.value()},
+		{name: 'defMult', value: defMult.value()},
+		{name: 'defFreq', value: defFreq.value()},
+		{name: 'defOff', value: defOff.value()},
+	];
+	let rendered = shaderPipeline(shaders,cnv, uniforms, 600, 450 );
 	
 	background(0)
 	image(rendered,92,70,410,274);
 	image(monitor_img,-3,-3,width+3,height+3);
+	noLoop();
 }
 
 function mousePressed() {
