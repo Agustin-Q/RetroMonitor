@@ -88,12 +88,8 @@ function draw() {
 	let w = width-2*x0;
 	let h = height-2*y0;
 	background(0)
-	//image(rendered,x0,y0,w,h);
 	image(rendered,87,70,420,274);
-	rect(0,0,width, height);
 	image(monitor_img,-3,-3,width+3,height+3);
-	strokeWeight(2);
-	quad(125,60,476,60,508,346,85,346);
 }
 
 function mousePressed() {
