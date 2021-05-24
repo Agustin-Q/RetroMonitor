@@ -44,28 +44,28 @@ function setup() {
 let fr = 0;
 
 function draw() {
-	shaderPass = sPass.value();
 	background(0);
 	stroke(77,204,255);
 	strokeWeight(6);
-
+	
 	noStroke();
-
+	
 	textFont("consolas");
-	textSize(50);
-	textAlign(CENTER, CENTER);
-	text("Loading...", width/2, height/2)
+	textSize(35);
+	textAlign(LEFT, BASELINE);
+	fill(255);
+	text("Loading... Please note that we have added a consequence for failure. Any contact with the chamber floor will result in an 'unsatisfactory' mark on your official testing record followed by death. Good luck!", 30,30,width-60,height-60);
 	textAlign(RIGHT,TOP);
-
+	
 	if(frameCount%30 == 0) fr = frameRate();
 	text(int(fr), width, 0);
 	textSize(20);
 	textAlign(RIGHT,BOTTOM);
 	text(frameCount, width, height);
-
-	image(capture, 0, 0, width,height);
-
-
+	
+	//image(capture, 0, 0, width,height);
+	
+	
 	if((frameCount%6==0)&&defMultAnimate.checked()){
 		if(random()<0.3){
 			defMult.value(random(0.05,0.15));
@@ -79,16 +79,12 @@ function draw() {
 	noFill();
 	stroke(255);
 	rect(20,20,width - 40, height -40);
+	shaderPass = sPass.value();
 	let rendered = shaderPipeline(cnv,shaderPass);
-
-	let marginx = 0.1;
-	let marginy = 0.1;
-	let x0 = width*marginx;
-	let y0 = height*marginy;
-	let w = width-2*x0;
-	let h = height-2*y0;
+	
+	
 	background(0)
-	image(rendered,87,70,420,274);
+	image(rendered,92,70,410,274);
 	image(monitor_img,-3,-3,width+3,height+3);
 }
 
@@ -109,9 +105,9 @@ function createSliders(){
 	mixXY   = createSliderMacro("mixXY",	0, 1,			0.9,		0);
 	shift   = createSliderMacro("shift",	0, 1,			0.05,		0);
 	defMult = createSliderMacro("defMult",0, 0.1,	0.001,	0);
-	defMultAnimate = createCheckbox("Anim",true).parent("sliderArea");
+	defMultAnimate = createCheckbox("Anim",false).parent("sliderArea");
 	defFreq = createSliderMacro("defFreq",0, width/2, 50,			0);
-	defFreqAnimate = createCheckbox("Anim",true).parent("sliderArea");
+	defFreqAnimate = createCheckbox("Anim",false).parent("sliderArea");
 	defOff  = createSliderMacro("defOff",	0, 7, 		TWO_PI/8.0,0);
 	sPass  = createSliderMacro("ShaderPass",	0,5, 	5,1);
 }
@@ -147,51 +143,4 @@ class averageFilter{
 		}
 		return sum/this.filterLength;
 	}
-}
-
-function shaderPipeline(graphicsLayer, pass){
-	if(pass == 0) return graphicsLayer;
-	if(!pass) pass = -1;
-	//recolor pass
-	glReColor.shader(reColorShader);
-	reColorShader.setUniform('tex0', graphicsLayer);
-	glReColor.quad(-1,1,1,1,1,-1,-1,-1);
-
-
-	if(pass == 1) return glReColor;
-
-	//fist shader pass
-	gl.shader(myShader);
-	myShader.setUniform('tex0', glReColor);
-	myShader.setUniform('freqy',freqy.value());
-	myShader.setUniform('multy',multy.value());
-	myShader.setUniform('offy',offy.value());
-	myShader.setUniform('freqx',freqx.value());
-	myShader.setUniform('multx',multx.value());
-	myShader.setUniform('offx',offx.value());
-	myShader.setUniform('mixXY',mixXY.value());
-	myShader.setUniform('shift',shift.value());
-
-	myShader.setUniform('defMult',defMult.value());
-	myShader.setUniform('defFreq',defFreq.value());
-	myShader.setUniform('defOff',defOff.value());
-
-	gl.quad(-1,1,1,1,1,-1,-1,-1);
-	if(pass == 2) return gl;
-	//smere shader pass
-	glSmere.shader(smereShader);
-	smereShader.setUniform('tex0',gl);
-	glSmere.quad(-1,1,1,1,1,-1,-1,-1);
-	if(pass == 3) return glSmere;
-	//deform shader pass
-	glDeform.shader(deformShader);
-	deformShader.setUniform('tex0',glSmere);
-	glDeform.quad(-1,1,1,1,1,-1,-1,-1);
-	//glDeform.triangle(0,0,0,10,10,0);
-	if(pass == 4) return glDeform;
-	
-	glTrapezoid.shader(trapezoidShader);
-	trapezoidShader.setUniform('tex0',glDeform);
-	glTrapezoid.quad(-1,1,1,1,1,-1,-1,-1);
-	if(pass == 5) return glTrapezoid;
 }
