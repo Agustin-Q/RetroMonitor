@@ -26,7 +26,7 @@ void main() {
 
   vec2 uv = vTexCoord;
   // the texture is loaded upside down and backwards by default so lets flip it
-  uv = 1.0 - uv;
+  //uv = 1.0 - uv;
 
   //mapear los uvs con un seno
   vec2 uv2 = uv;

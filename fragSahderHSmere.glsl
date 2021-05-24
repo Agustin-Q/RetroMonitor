@@ -15,7 +15,7 @@ void main() {
   vec2 dir2d = vec2(-4.0,0.0);
   vec2 uv = vTexCoord;
   // the texture is loaded upside down and backwards by default so lets flip it
-  uv = 1.0 - uv;
+  //uv = 1.0 - uv;
   float accum = 0.0;
   vec4 tempTex = vec4(0.0);
   for(int i = 0; i < 10000; i++ ){

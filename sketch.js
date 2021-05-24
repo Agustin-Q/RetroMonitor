@@ -11,6 +11,8 @@ let glReColor;
 let reColorShader;
 let glDeform;
 let deformShader;
+let trapezoidShader;
+let glTrapezoid;
 let shaderPass = 3;
 let img, monitor_img;
 
@@ -20,6 +22,7 @@ function preload(){
 	smereShader = loadShader('vertShader.glsl', 'fragSahderHSmere.glsl');
 	reColorShader = loadShader('vertShader.glsl', 'recolorFragShader.glsl');
 	deformShader = loadShader('vertShader.glsl', 'deformFragShader.glsl');
+	trapezoidShader = loadShader('vertShader.glsl', 'trapezoidFragShader.glsl');;
 	monitor_img = loadImage('Assets/monitor.png');
 }
 let capture;
@@ -30,6 +33,7 @@ function setup() {
 	glSmere = createGraphics(width, height,WEBGL);
 	glReColor= createGraphics(width, height,WEBGL);
 	glDeform = createGraphics(width, height,WEBGL);
+	glTrapezoid = createGraphics(width, height,WEBGL);
 	createSliders();
 	fill(77,204,255);
 	capture = createCapture(VIDEO);
@@ -44,14 +48,15 @@ function draw() {
 	background(0);
 	stroke(77,204,255);
 	strokeWeight(6);
-	for(let i = 0; i<10;i++){
-		line(0,i*height/10,5,i*height/10);
-	}
+
 	noStroke();
 
 	textFont("consolas");
 	textSize(50);
+	textAlign(CENTER, CENTER);
+	text("Loading...", width/2, height/2)
 	textAlign(RIGHT,TOP);
+
 	if(frameCount%30 == 0) fr = frameRate();
 	text(int(fr), width, 0);
 	textSize(20);
@@ -71,6 +76,9 @@ function draw() {
 		}
 	}
 
+	noFill();
+	stroke(255);
+	rect(20,20,width - 40, height -40);
 	let rendered = shaderPipeline(cnv,shaderPass);
 
 	let marginx = 0.1;
@@ -80,11 +88,16 @@ function draw() {
 	let w = width-2*x0;
 	let h = height-2*y0;
 	background(0)
-	image(rendered,x0,y0,w,h);
+	//image(rendered,x0,y0,w,h);
+	image(rendered,87,70,420,274);
+	rect(0,0,width, height);
 	image(monitor_img,-3,-3,width+3,height+3);
+	strokeWeight(2);
+	quad(125,60,476,60,508,346,85,346);
 }
 
 function mousePressed() {
+	console.log(`${mouseX}, ${mouseY}`);
 }
 
 let freqy, multy,offy, freqx,multx,offx, mixXY,shift;
@@ -104,7 +117,7 @@ function createSliders(){
 	defFreq = createSliderMacro("defFreq",0, width/2, 50,			0);
 	defFreqAnimate = createCheckbox("Anim",true).parent("sliderArea");
 	defOff  = createSliderMacro("defOff",	0, 7, 		TWO_PI/8.0,0);
-	sPass  = createSliderMacro("ShaderPass",	0,4, 	4,1);
+	sPass  = createSliderMacro("ShaderPass",	0,5, 	5,1);
 }
 
 function createSliderMacro(name, min, max, def, step){
@@ -146,7 +159,8 @@ function shaderPipeline(graphicsLayer, pass){
 	//recolor pass
 	glReColor.shader(reColorShader);
 	reColorShader.setUniform('tex0', graphicsLayer);
-	glReColor.rect(-width/2,-height/2,width,height);
+	glReColor.quad(-1,1,1,1,1,-1,-1,-1);
+
 
 	if(pass == 1) return glReColor;
 
@@ -166,17 +180,22 @@ function shaderPipeline(graphicsLayer, pass){
 	myShader.setUniform('defFreq',defFreq.value());
 	myShader.setUniform('defOff',defOff.value());
 
-	gl.rect(-width/2,-height/2,width,height);
+	gl.quad(-1,1,1,1,1,-1,-1,-1);
 	if(pass == 2) return gl;
 	//smere shader pass
 	glSmere.shader(smereShader);
 	smereShader.setUniform('tex0',gl);
-	glSmere.rect(-width/2,-height/2,width,height);	
+	glSmere.quad(-1,1,1,1,1,-1,-1,-1);
 	if(pass == 3) return glSmere;
 	//deform shader pass
 	glDeform.shader(deformShader);
 	deformShader.setUniform('tex0',glSmere);
-	glDeform.rect(-width/2,-height/2,width,height);	
+	glDeform.quad(-1,1,1,1,1,-1,-1,-1);
+	//glDeform.triangle(0,0,0,10,10,0);
 	if(pass == 4) return glDeform;
 	
+	glTrapezoid.shader(trapezoidShader);
+	trapezoidShader.setUniform('tex0',glDeform);
+	glTrapezoid.quad(-1,1,1,1,1,-1,-1,-1);
+	if(pass == 5) return glTrapezoid;
 }
